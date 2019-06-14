@@ -24,39 +24,34 @@ commentMove.prototype = {
     },
     start: function () {
         var that = this;
+	var viewWidth = 1066,viewHeight = 600,navWidth = 80;
         
         $(that.parentcontent + ' li').click(function () {
             $(this).toggleClass(that.obj.activeClass).siblings().removeClass(that.obj.activeClass);
-       //     var src =  $('.' + that.obj.activeClass).attr('data-src');
             var src =  $('.current_' + that.obj.id).attr('data-src');
-          
-            var img = new Image();
-            img.onload = function () {
-                var imageWidth = img.width;
-                var imageHeight = img.height;
-                
-                //最大宽度
-                if(imageWidth >800){
-                	imageWidth = 800;
-                //	imageHeight = img.height/(img.width/imageWidth);
-                	
-                }
-                $(that.boxcontent).css({ "width": imageWidth, "height": imageHeight })
-                $(that.obj.prevButton).css({ "width": imageWidth / 3, "height": imageHeight })
-                $(that.obj.prevButton).children().css({ "top": imageHeight / 2 - 10 + 'px' })
-                $(that.obj.nextButton).children().css({ "top": imageHeight / 2 - 10 + 'px' })
-            }
-            img.src = src;//src 属性一定要写到 onload 的后面，否则程序在 IE 中会出错
+            
+            $(that.boxcontent).css({ "width": viewWidth, "height": viewHeight });
+            $(that.obj.prevButton).css({ "width": navWidth, "height": viewHeight });
+            $(that.obj.prevButton).children().css({ "top": viewHeight / 2 - 10 + 'px' });
+            $(that.obj.nextButton).children().css({ "top": viewHeight / 2 - 10 + 'px' });
             
             if (!src) {
                 $(that.boxcontent).css({ "width": 0, "height": 0 });
             } else {
-                $(that.boxcontent + " img").attr('src', src);
+                $(that.boxcontent).css({"background-image":"url("+src+")","background-size":"contain","background-position":"center","background-repeat":"no-repeat","border":"1px solid lightGray"});
             }
-        })
+        });
+
+        $(that.boxcontent).click(function(e){
+            if(e.pageX - $(this).offset().left <= navWidth || e.pageX - $(this).offset().left >= viewWidth -navWidth){
+                return;
+            }
+            var index = $(that.parentcontent + ' li').index($(that.parentcontent + ' li.current_' + that.obj.id));
+            $(that.parentcontent + ' li').eq(index).toggleClass(that.obj.activeClass).siblings().removeClass(that.obj.activeClass);
+            $(this).css({"width":0,"height":0});
+        });
     },
     lefthover: function () {
-    	
         var that = this;
         $(that.obj.prevButton).hover(function () {
         	
@@ -71,7 +66,6 @@ commentMove.prototype = {
         })
     },
     righthover: function () {
-    	
         var that = this;
         $(that.obj.nextButton).hover(function () {
        
@@ -87,16 +81,14 @@ commentMove.prototype = {
         })
     },
     leftclick: function () {
-    	
         var that = this;
-        $(that.obj.prevButton).click(function () {
-        	
+        $(that.obj.prevButton).click(function () { 	
             var index = $(that.parentcontent + ' li').index($(that.parentcontent + ' li.current_' + that.obj.id));
-
             index--;
             if (index >= 0) {
-                $(that.parentcontent + ' li').eq(index).toggleClass(that.obj.activeClass).siblings().removeClass(that.obj.activeClass)
-                $(that.boxcontent + " img").attr("src", $(that.parentcontent + ' li').eq(index).attr('data-src'))
+                $(that.parentcontent + ' li').eq(index).toggleClass(that.obj.activeClass).siblings().removeClass(that.obj.activeClass);
+                $(that.boxcontent).css({"background-image":"url("+$(that.parentcontent + ' li').eq(index).attr('data-src')+")","background-size":"contain","background-position":"center","background-repeat":"no-repeat","border":"1px solid lightGray"});
+
             }
             if (index < 1) {
                 index = 0;
@@ -110,14 +102,13 @@ commentMove.prototype = {
         $(that.obj.nextButton).click(function () {
             var index = $(that.parentcontent + ' li').index($(that.parentcontent + ' li.current_' + that.obj.id));
             index++;
-            $(that.boxcontent + " img").attr("src", $(that.parentcontent + ' li').eq(index).attr('data-src'))
-
-            $(that.parentcontent + ' li').eq(index).toggleClass(that.obj.activeClass).siblings().removeClass(that.obj.activeClass);
+            if(index < $(that.parentcontent + ' li').length){
+                $(that.boxcontent).css({"background-image":"url("+$(that.parentcontent + ' li').eq(index).attr('data-src')+")","background-size":"contain","background-position":"center","background-repeat":"no-repeat","border":"1px solid lightGray"});
+                $(that.parentcontent + ' li').eq(index).toggleClass(that.obj.activeClass).siblings().removeClass(that.obj.activeClass);
+            }
             if (index >= $(that.parentcontent + ' li').length - 1) {
                 $(this).children().css({ "display": "none" });
             }
         })
     }
 }
-
-
